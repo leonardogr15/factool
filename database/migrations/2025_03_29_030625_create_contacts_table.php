@@ -16,18 +16,24 @@ class ContactController extends Controller
      */
     public function store(Request $request)
     {
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email',
+            'email' => 'required|email|unique:contacts,email', 
         ]);
 
-        $contact = Contact::updateOrCreate(
-            ['email' => $validated['email']],
-            ['name' => $validated['name']]
-        );
+        $existingContact = Contact::where('email', $validated['email'])->first();
+        if ($existingContact) {
+            return response()->json(['message' => 'El correo ya está registrado.'], 400);
+        }
+
+        $contact = Contact::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+        ]);
 
         SendEmailJob::dispatch($contact);
 
-        return response()->json(['message' => 'Contacto creado/actualizado y correo enviado.'], 201);
+        return response()->json(['message' => 'Contacto creado y correo enviado.'], 201);
     }
 }

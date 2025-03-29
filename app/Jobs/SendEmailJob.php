@@ -4,19 +4,19 @@ namespace App\Jobs;
 
 use App\Mail\SendContactEmail;
 use App\Models\Contact;
-use Illuminate\Bus\Dispatchable;
-use Illuminate\Foundation\Bus\Dispatchable as BusDispatchable;
+use Illuminate\Bus\Dispatchable;  // Importar Dispatchable desde Illuminate\Bus
+use Illuminate\Bus\Queueable;     // Importar Queueable desde Illuminate\Bus
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Mail;
 
-class SendEmailJob extends Job
+class SendEmailJob
 {
-    use Dispatchable, SerializesModels;
+    use Dispatchable, Queueable, SerializesModels;  // Usar los traits correctamente
 
     protected $contact;
 
     /**
-     * Create a new job instance.
+     * Crear una nueva instancia del trabajo.
      *
      * @param  \App\Models\Contact  $contact
      * @return void
@@ -33,7 +33,7 @@ class SendEmailJob extends Job
      */
     public function handle()
     {
-        // Usamos el modelo de contacto para enviar el correo
+        // Enviar el correo usando el modelo de contacto
         Mail::to($this->contact->email)->send(new SendContactEmail($this->contact));
     }
 }
