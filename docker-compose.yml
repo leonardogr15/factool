@@ -1,30 +1,27 @@
-version: '3'
+version: '3.8'
+
 services:
   app:
-    image: php:8.0-fpm
+    image: factool
     container_name: factool-app
+    ports:
+      - "8000:80"
     volumes:
       - .:/var/www
     networks:
-      - app-network
+      - factool-network
 
   db:
     image: mysql:5.7
     container_name: factool-db
     environment:
-      MYSQL_ROOT_PASSWORD: root
+      MYSQL_ROOT_PASSWORD: secret
       MYSQL_DATABASE: factool
     ports:
       - "3306:3306"
     networks:
-      - app-network
-
-  redis:
-    image: redis:alpine
-    container_name: redis
-    networks:
-      - app-network
+      - factool-network
 
 networks:
-  app-network:
+  factool-network:
     driver: bridge
